@@ -46,11 +46,16 @@ namespace lab1
         {
             b1 = stream1.ReadByte();
             b2 = stream2.ReadByte();
-            if (b1 == EOF)
+
+            if(b1 == EOF && b2 == EOF)
+            {
+                status = StatusFiles.BothEof;
+            }
+            else if (b1 == EOF)
             {
                 status = StatusFiles.FirstEof;
             }
-            if (b2 == EOF)
+            else if (b2 == EOF)
             {
                 status = StatusFiles.SecondEof;
             }
@@ -110,31 +115,31 @@ namespace lab1
                 if(status == StatusFiles.NoneEof)
                 {
                     offset = true;
-                    Console.Write("0x{0:x8}: ", position - 1);
+                    Console.Write("0x{0:X8}: ", position - 1);
                     
                     do
                     {
-                        Console.Write("0x{0:x}(0x{1:x}) ", b1, b2);
+                        Console.Write("0x{0:X2}(0x{1:X2}) ", b1, b2);
                         position++;
                         count++;
                     } while (!CheckEqual(ref stream1, ref stream2, out b1, out b2, ref status) && status == StatusFiles.NoneEof);
                 }
 
-                if (!offset)
+                if (!offset && status != StatusFiles.BothEof)
                 {
-                    Console.Write("0x{0:x8}: ", position - 1);
+                    Console.Write("0x{0:X8}: ", position - 1);
                 }
 
                 if(status == StatusFiles.FirstEof)
                 {
-                    Console.Write("<EOF>(0x{0:x}) ", b2);
-                    PrintRest(ref stream2, "(0x{0:x}) ", b2, ref count, ref status);
+                    Console.Write("<EOF>(0x{0:X2}) ", b2);
+                    PrintRest(ref stream2, "(0x{0:X2}) ", b2, ref count, ref status);
                 }
 
                 if(status == StatusFiles.SecondEof)
                 {
-                    Console.Write("0x{0:x}(<EOF>) ", b1);
-                    PrintRest(ref stream1, "0x{0:x} ", b1, ref count, ref status);
+                    Console.Write("0x{0:X2}(<EOF>) ", b1);
+                    PrintRest(ref stream1, "0x{0:X2} ", b1, ref count, ref status);
                 }
 
                 Console.WriteLine();
