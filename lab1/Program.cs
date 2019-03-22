@@ -15,6 +15,7 @@ namespace lab1
     class Program
     {
         private const int EOF = -1;
+        private static long N { get; set; }
 
         public static long SkipSame(ref FileStream stream1, ref FileStream stream2, out int b1, out int b2, ref StatusFiles status)
         {
@@ -59,7 +60,7 @@ namespace lab1
         public static void PrintRest(ref FileStream stream, string pattern, int b, ref long count, ref StatusFiles status)
         {
             count++;
-            while(b != EOF)
+            while(b != EOF && count < N)
             {
                 b = stream.ReadByte();
                 if (b != EOF)
@@ -73,20 +74,42 @@ namespace lab1
 
         static void Main(string[] args)
         {
+            if(args.Length < 2)
+            {
+                Console.WriteLine("Program requires at least 2 args");
+                return;
+            }
+
             Console.WriteLine(args[0]);
             Console.WriteLine(args[1]);
             FileStream stream1 = new FileStream(args[0], FileMode.Open);
             FileStream stream2 = new FileStream(args[1], FileMode.Open);
 
+            if(args.Length > 2)
+            {
+                N = Convert.ToInt64(args[2]);
+            }
+            else
+            {
+                N = stream1.Length;
+                if(stream2.Length > N)
+                {
+                    N = stream2.Length;
+                }
+            }
+
             StatusFiles status = StatusFiles.NoneEof;
             long position = 0, count = 0;
             int b1 = 0, b2 = 0;
-            while(status != StatusFiles.BothEof)
+
+            while(status != StatusFiles.BothEof && count < N)
             {
+                bool offset = false;
                 position = SkipSame(ref stream1, ref stream2, out b1, out b2, ref status);
 
                 if(status == StatusFiles.NoneEof)
                 {
+                    offset = true;
                     Console.Write("0x{0:x8}: ", position - 1);
                     
                     do
@@ -95,6 +118,11 @@ namespace lab1
                         position++;
                         count++;
                     } while (!CheckEqual(ref stream1, ref stream2, out b1, out b2, ref status) && status == StatusFiles.NoneEof);
+                }
+
+                if (!offset)
+                {
+                    Console.Write("0x{0:x8}: ", position - 1);
                 }
 
                 if(status == StatusFiles.FirstEof)
