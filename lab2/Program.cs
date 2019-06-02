@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace lab2
@@ -17,8 +18,9 @@ namespace lab2
             Console.WriteLine("e - exit of program");
         }
 
-        static void mainMenu()
+        static void mainMenu(List<Shape> shapes)
         {
+            printHelp();
             ConsoleKeyInfo key;
             char keyChar;
 
@@ -31,11 +33,12 @@ namespace lab2
                 {
                     case 'c':
                         {
-                            createShapeMenu();
+                            createShapeMenu(shapes);
                             break;
                         }
                     case 'l':
                         {
+                            printShapes(shapes);
                             break;
                         }
                     case 'h':
@@ -56,7 +59,7 @@ namespace lab2
             }
         }
 
-        private static void createShapeMenu()
+        private static void createShapeMenu(List<Shape> shapes)
         {
             Console.WriteLine();
             Console.WriteLine("Choose a shape to create: E - Ellipse, С - Circle, P - polygon, press Q to cancel");
@@ -76,6 +79,7 @@ namespace lab2
                         }
                     case 'c':
                         {
+                            createCircle(shapes);
                             return;
                         }
                     case 'p':
@@ -96,9 +100,42 @@ namespace lab2
             }
         }
 
+        private static void printShapes(List<Shape> shapes)
+        {
+            Console.WriteLine();
+            foreach (Shape item in shapes)
+            {
+                Console.WriteLine(item.ToString());
+            }
+        }
+
+        private static void createCircle(List<Shape> shapes)
+        {
+            Point center;
+            Console.WriteLine("Input coordinates of circle's center in a format x y");
+            string line = Console.ReadLine();
+            Regex regForPoint = new Regex(@"(\d*\.?\d+)\s+(\d*\.?\d+)");
+            MatchCollection matches = regForPoint.Matches(line);
+            if (matches.Count == 1)
+            {
+                GroupCollection group1 = matches[0].Groups;
+                double x = Convert.ToDouble(group1[1].ToString());
+                double y = Convert.ToDouble(group1[2].ToString());
+                center = new Point(x, y);
+                Console.WriteLine("Input a radius");
+                double radius = Convert.ToDouble(Console.ReadLine().ToString());
+                shapes.Add(new Circle(center, radius));
+            }
+            else
+            {
+                Console.WriteLine("Couldn't create a circle because of a wrong input");
+            }
+        }
+
         static void Main(string[] args)
         {
-            mainMenu();
+            List<Shape> shapes = new List<Shape>();
+            mainMenu(shapes);
         }
     }
 }
