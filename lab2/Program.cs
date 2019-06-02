@@ -52,7 +52,7 @@ namespace lab2
                         }
                     default:
                         {
-                            Console.WriteLine("Wrong input! h - help");
+                            Console.WriteLine("Wrong input! press 'h' for help");
                             break;
                         }
                 }
@@ -75,6 +75,7 @@ namespace lab2
                 {
                     case 'e':
                         {
+                            createEllipse(shapes);
                             return;
                         }
                     case 'c':
@@ -84,6 +85,7 @@ namespace lab2
                         }
                     case 'p':
                         {
+                            createPolygon(shapes);
                             return;
                         }
                     case 'q':
@@ -129,6 +131,58 @@ namespace lab2
             else
             {
                 Console.WriteLine("Couldn't create a circle because of a wrong input");
+            }
+        }
+
+        private static void createEllipse(List<Shape> shapes)
+        {
+            Point focus1, focus2;
+            Console.WriteLine("Input coordinates of focuses in a format x1 y1 x2 y2");
+            string line = Console.ReadLine();
+            Regex regForPoint = new Regex(@"(\d*\.?\d+)\s+(\d*\.?\d+)");
+            MatchCollection matches = regForPoint.Matches(line);
+            if (matches.Count == 2)
+            {
+                GroupCollection group1 = matches[0].Groups;
+                GroupCollection group2 = matches[1].Groups;
+                focus1 = new Point(Convert.ToDouble(group1[1].Value), Convert.ToDouble(group1[2].Value));
+                focus2 = new Point(Convert.ToDouble(group2[1].Value), Convert.ToDouble(group2[2].Value));
+                Console.WriteLine("Input a length of a big half-axis");
+                double axis = Convert.ToDouble(Console.ReadLine());
+                shapes.Add(new Ellipse(focus1, focus2, axis));
+            }
+            else
+            {
+                Console.WriteLine("Couldn't create an ellipse because of a wrong input");
+            }
+        }
+
+        private static void createPolygon(List<Shape> shapes)
+        {
+            List<Point> points = new List<Point>();
+            Console.WriteLine("Input a number of points in a polygon");
+            int n = Convert.ToInt32(Console.ReadLine());
+            if(n < 3)
+            {
+                Console.WriteLine("You can't create a polygon of less then 3 points");
+                return;
+            }
+            Console.WriteLine("Input {0} points in a format x1 y1 x2 y2 .... xn yn", n);
+            string line = Console.ReadLine();
+            Regex regForPoint = new Regex(@"(\d*\.?\d+)\s+(\d*\.?\d+)");
+            MatchCollection matches = regForPoint.Matches(line);
+            if (matches.Count == n)
+            {
+                foreach (Match match in matches)
+                {
+                    GroupCollection group = match.Groups;
+                    points.Add(new Point(Convert.ToDouble(group[1].Value), Convert.ToDouble(group[2].Value)));
+                }
+                shapes.Add(new Polygon(n, points));
+            }
+            else
+            {
+                Console.WriteLine("Couldn't create a polygon because of a wrong input");
             }
         }
 
