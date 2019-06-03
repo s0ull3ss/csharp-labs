@@ -36,5 +36,19 @@ namespace RatioLibrary
             this.numerator = numerator;
             this.denominator = denominator;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}/{1}", numerator, denominator);
+        }
+
+        public double ToDouble()
+        {
+            if (denominator == 0)
+            {
+                throw new DenominatorException("The denominator should not be zero");
+            }
+            return (double)numerator / denominator;
+        }
     }
 }
