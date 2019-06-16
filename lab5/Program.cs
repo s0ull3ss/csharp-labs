@@ -26,13 +26,20 @@ namespace lab5
             int k = 1;
             MatrixFilter mf = new MatrixFilter(k);
             Bitmap img = new Bitmap(imgpath);
+            Bitmap img2 = new Bitmap(imgpath);
 
             DateTime start = DateTime.Now;
             mf.ApplyFilterToBitmap(ref img);
             TimeSpan elapsed = DateTime.Now - start;
-            Console.WriteLine("Elapsed time: {0}", elapsed);
+            Console.WriteLine("Elapsed time (safe): {0}", elapsed);
+
+            start = DateTime.Now;
+            mf.ApplyFilterToBitmapUnsafe(ref img2);
+            elapsed = DateTime.Now - start;
+            Console.WriteLine("Elapsed time (unsafe): {0}", elapsed);
 
             img.Save("Safe.jpeg", ImageFormat.Jpeg);
+            img2.Save("Unsafe.jpeg", ImageFormat.Jpeg);
             Console.ReadKey();
         }
     }
