@@ -23,23 +23,31 @@ namespace lab5
                 Console.WriteLine(args[0]);
             }
 
-            int k = 1;
+            int k = 5;
             MatrixFilter mf = new MatrixFilter(k);
             Bitmap img = new Bitmap(imgpath);
             Bitmap img2 = new Bitmap(imgpath);
 
-            DateTime start = DateTime.Now;
-            mf.ApplyFilterToBitmap(ref img);
-            TimeSpan elapsed = DateTime.Now - start;
-            Console.WriteLine("Elapsed time (safe): {0}", elapsed);
-
-            start = DateTime.Now;
-            mf.ApplyFilterToBitmapUnsafe(ref img2);
-            elapsed = DateTime.Now - start;
-            Console.WriteLine("Elapsed time (unsafe): {0}", elapsed);
-
-            img.Save("Safe.jpeg", ImageFormat.Jpeg);
-            img2.Save("Unsafe.jpeg", ImageFormat.Jpeg);
+            int[] thread_cnts = new int[] { 1, 2, 4, 8 };
+            List<long> times = new List<long>();
+            foreach (var cnt in thread_cnts)
+            {
+                img = new Bitmap(img2);
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                mf.Run(cnt, img);
+                var elapsed = watch.ElapsedMilliseconds;
+                times.Add(elapsed);
+                Console.WriteLine("Elapsed time(ms): {0}; thread count {1}", elapsed, cnt);
+                img.Save("thread" + cnt + ".jpeg", ImageFormat.Jpeg);
+            }
+            
+            foreach(var el in times)
+            {
+                double tmp = Convert.ToDouble(times[0]) / Convert.ToDouble(el);
+                Console.WriteLine("Ускорение: {0}", tmp);
+            }
+        
+            Console.WriteLine("Completed. Press any key for exit");
             Console.ReadKey();
         }
     }
